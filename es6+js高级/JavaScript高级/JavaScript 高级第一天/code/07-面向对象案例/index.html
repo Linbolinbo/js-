@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>面向对象 Tab</title>
+    <link rel="stylesheet" href="./styles/tab.css">
+    <link rel="stylesheet" href="./styles/style.css">
+</head>
+
+<body>
+
+    <main>
+        <h4>
+            Js 面向对象 动态添加标签页
+        </h4>
+        <div class="tabsbox" id="tab">
+            <!-- tab 标签 -->
+            <nav class="fisrstnav">
+                <ul>
+                    <li class="liactive"><span>测试1</span><span class="iconfont icon-guanbi"></span></li>
+                    <li><span>测试2</span><span class="iconfont icon-guanbi"></span></li>
+                    <li><span>测试3</span><span class="iconfont icon-guanbi"></span></li>
+                </ul>
+                <div class="tabadd">
+                    <span>+</span>
+                </div>
+            </nav>
+
+            <!-- tab 内容 -->
+            <div class="tabscon">
+                <section class="conactive">测试1</section>
+                <section>测试2</section>
+                <section>测试3</section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let that
+        let sum
+       class Tab{
+        // 构造函数
+        constructor(id){
+            // 获取元素
+            that=this
+            this.main=document.querySelector(id)
+            this.add=this.main.querySelector('.tabadd')
+            this.ul=this.main.querySelector('.fisrstnav ul')
+            this.tab=this.main.querySelector('.tabscon')
+            this.init()
+        }
+        //  获取元素(包括操作后的元素),动态元素写在这里面
+        updateNode(){
+            this.lis=this.main.querySelectorAll('li')
+            this.sections=this.main.querySelectorAll('section')
+           this.remove=document.querySelectorAll('.icon-guanbi')
+            this.spans=this.main.querySelectorAll('.fisrstnav li span:first-child')
+        }
+        init(){
+            this.updateNode()
+            // 初始化功能,添加操作事件
+            this.add.onclick=this.addTab
+            for(let i=0;i<this.lis.length;i++){
+                this.lis[i].index=i
+                sum=i
+                this.lis[i].onclick=this.toggleTab
+                this.remove[i].onclick=this.removeTab
+                this.spans[i].ondblclick=this.editTab
+                this.sections[i].ondblclick=this.editTab
+
+            }
+
+        }
+        //1. 切换功能
+        toggleTab(){
+            // 利用排他思想，先在DOM中找到有原有的class去除，再现在操作的对象添加类
+            document.querySelector('.liactive').classList.remove('liactive')
+            this.classList.add('liactive')
+            document.querySelector('.conactive').classList.remove('conactive')
+            that.sections[this.index].classList.add('conactive')
+        }
+        // 2.添加功能
+        addTab(){
+            
+            if(sum>0){
+                document.querySelector('.liactive').classList.remove('liactive')
+            document.querySelector('.conactive').classList.remove('conactive')
+        }
+        
+            let li='<li class="liactive"><span>测试1</span><span class="iconfont icon-guanbi"></span></li>'
+                
+            let section='<section class="conactive">测试1</section>'
+            that.ul.insertAdjacentHTML('beforeend',li)
+            that.tab.insertAdjacentHTML('beforeend',section)
+            that.init()
+        }
+        // 3.删除功能
+        removeTab(e){
+            e.stopPropagation()
+            let index=this.parentNode.index
+            that.lis[index].remove()
+            that.sections[index].remove()
+            that.init()
+            if(document.querySelector('.liactive'))return
+            index--
+            that.lis[index]&&that.lis[index].classList.add('liactive')
+            that.sections[index]&&that.sections[index].classList.add('conactive')
+        }
+        // 4.修改功能
+        editTab(){
+            let str=this.innerHTML
+            window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+            this.innerHTML='<input type="text"/>'
+            let input=this.children[0]
+            input.value=str
+            input.select()
+            input.onblur=function(){
+                this.parentNode.innerHTML=input.value
+            }
+            input.onkeyup=function(e){
+                if(e.keyCode===13){
+                this.blur()
+
+                }
+            }
+        }
+       }
+       new Tab('#tab')
+        
+    </script>
+</body>
+
+</html>
